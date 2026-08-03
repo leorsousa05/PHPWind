@@ -26,11 +26,11 @@ Ele detecta automaticamente o Sistema Operacional e a arquitetura da sua máquin
 
 - 🚫 **Zero Dependência do Node.js:** Sem necessidade de `package.json`, `node_modules` ou `npm`.
 - 📦 **Downloader Automático de Binários:** Detecta Windows, Linux e macOS (x64 e ARM64) e baixa o binário correto do GitHub Releases.
-- ⚡ **Executável CLI:** Acesse `vendor/bin/phpwind` para comandos `build` e `watch`.
+- ⚡ **Executável CLI:** Acesse `vendor/bin/phpwind` para comandos `build`, `watch`, `init` e `clean`.
 - 🔄 **Compatível com Tailwind v3 e v4:** Alterne facilmente entre versões (`v4.0.0`, `v3.4.17`, etc.).
 - 🎨 **Helper HTML Inteligente:** A função `phpwind_css()` gera tags `<link>` com hash MD5 automático para cache-busting.
 - ⚡ **Middleware On-Demand:** Recompila o CSS automaticamente em requisições HTTP durante o desenvolvimento.
-- 🚀 **Integração Nativa com Laravel:** ServiceProvider, comandos Artisan (`phpwind:build`, `phpwind:watch`) e diretiva Blade `@phpwind`.
+- 🚀 **Integração Nativa com Laravel:** ServiceProvider, comandos Artisan (`phpwind:build`, `phpwind:watch`, `phpwind:init`, `phpwind:clean`) e diretiva Blade `@phpwind`.
 
 ---
 
@@ -45,11 +45,17 @@ composer require leorsousa05/phpwind
 ## 🛠️ Comandos CLI
 
 ```bash
+# Inicializar arquivo de CSS de entrada
+vendor/bin/phpwind init
+
 # Compilar CSS de produção minificado
 vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --minify
 
 # Iniciar modo watcher em desenvolvimento
 vendor/bin/phpwind watch -i resources/css/app.css -o public/css/app.css
+
+# Limpar binários baixados e arquivos gerados em cache
+vendor/bin/phpwind clean
 
 # Compilar apontando para uma versão específica do Tailwind
 vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --version=v3.4.17
@@ -76,6 +82,13 @@ vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --versio
 ```
 
 ### Laravel
+
+```bash
+php artisan phpwind:init
+php artisan phpwind:build
+php artisan phpwind:watch
+php artisan phpwind:clean
+```
 
 ```blade
 <!DOCTYPE html>

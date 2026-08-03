@@ -26,11 +26,11 @@ It automatically detects your host Operating System and CPU architecture, downlo
 
 - 🚫 **Zero Node.js Required:** No `package.json`, `node_modules`, or `npm` installations.
 - 📦 **Auto Binary Downloader:** Detects Windows, Linux, and macOS (x64 and ARM64) and fetches official GitHub Release binaries.
-- ⚡ **CLI Companion:** Access `vendor/bin/phpwind` for `build` and `watch` tasks.
+- ⚡ **CLI Companion:** Access `vendor/bin/phpwind` for `build`, `watch`, `init`, and `clean` tasks.
 - 🔄 **Tailwind v3 & v4 Compatible:** Easily switch between versions (`v4.0.0`, `v3.4.17`, etc.).
 - 🎨 **HTML Asset Helper:** `phpwind_css()` function outputs `<link>` tags with MD5 cache-busting hashes.
 - ⚡ **On-Demand Middleware:** Automatically recompile CSS on HTTP requests in development.
-- 🚀 **Laravel Integration:** ServiceProvider, Artisan commands (`phpwind:build`, `phpwind:watch`), and `@phpwind` Blade directive.
+- 🚀 **Laravel Integration:** ServiceProvider, Artisan commands (`phpwind:build`, `phpwind:watch`, `phpwind:init`, `phpwind:clean`), and `@phpwind` Blade directive.
 
 ---
 
@@ -45,11 +45,17 @@ composer require leorsousa05/phpwind
 ## 🛠️ CLI Usage
 
 ```bash
+# Initialize input CSS
+vendor/bin/phpwind init
+
 # Build production CSS with minification
 vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --minify
 
 # Start dev watcher mode
 vendor/bin/phpwind watch -i resources/css/app.css -o public/css/app.css
+
+# Clean cached binary and output
+vendor/bin/phpwind clean
 
 # Target a specific Tailwind version
 vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --version=v3.4.17
@@ -76,6 +82,13 @@ vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --versio
 ```
 
 ### Laravel
+
+```bash
+php artisan phpwind:init
+php artisan phpwind:build
+php artisan phpwind:watch
+php artisan phpwind:clean
+```
 
 ```blade
 <!DOCTYPE html>

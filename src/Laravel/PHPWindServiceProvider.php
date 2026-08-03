@@ -4,8 +4,9 @@ namespace PHPWind\Laravel;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use PHPWind\Helper\AssetHelper;
 use PHPWind\Laravel\Commands\BuildCommand;
+use PHPWind\Laravel\Commands\CleanCommand;
+use PHPWind\Laravel\Commands\InitCommand;
 use PHPWind\Laravel\Commands\WatchCommand;
 
 class PHPWindServiceProvider extends ServiceProvider
@@ -27,6 +28,8 @@ class PHPWindServiceProvider extends ServiceProvider
             $this->commands([
                 BuildCommand::class,
                 WatchCommand::class,
+                InitCommand::class,
+                CleanCommand::class,
             ]);
         }
 

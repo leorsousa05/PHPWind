@@ -7,6 +7,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/leorsousa05/PHPWind/actions"><img src="https://github.com/leorsousa05/PHPWind/actions/workflows/tests.yml/badge.svg" alt="Build Status"></a>
   <a href="https://github.com/leorsousa05/PHPWind/releases"><img src="https://img.shields.io/github/v/tag/leorsousa05/PHPWind?style=flat-square&label=version" alt="Latest Tag"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/leorsousa05/PHPWind?style=flat-square" alt="License"></a>
   <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-%3E%3D%208.1-777BB4.svg?style=flat-square" alt="PHP Version"></a>
@@ -32,11 +33,11 @@ It automatically detects your Operating System and CPU architecture, downloads t
 
 - 🚫 **Zero Node.js Dependency:** No `package.json`, `node_modules`, or `npm` required.
 - 📦 **Automatic Binary Downloader:** Detects OS (Windows, Linux, macOS) & Arch (x64, ARM64) and fetches official binaries.
-- ⚡ **CLI Companion:** Built-in executable `vendor/bin/phpwind` with `build` and `watch` support.
+- ⚡ **CLI Companion:** Built-in executable `vendor/bin/phpwind` for `build`, `watch`, `init`, and `clean`.
 - 🔄 **Tailwind v3 & v4 Compatible:** Seamlessly switch versions (`v4.0.0`, `v3.4.17`, etc.).
 - 🎨 **Smart Asset Helper:** Automatic HTML `<link>` tag generation with MD5 cache busting.
 - ⚡ **On-Demand Dev Middleware:** Recompiles CSS dynamically during incoming HTTP requests in development.
-- 🚀 **Laravel First-Class Adapter:** ServiceProvider, Artisan commands (`phpwind:build`, `phpwind:watch`), and Blade directive `@phpwind`.
+- 🚀 **Laravel First-Class Adapter:** ServiceProvider, Artisan commands (`phpwind:build`, `phpwind:watch`, `phpwind:init`, `phpwind:clean`), and Blade directive `@phpwind`.
 - 🧩 **Framework Agnostic:** Works in Vanilla PHP, Symfony, Slim, CodeIgniter, or custom setups.
 
 ---
@@ -52,6 +53,12 @@ composer require leorsousa05/phpwind
 ## 🛠️ CLI Command Reference
 
 Once installed, the CLI binary is available at `vendor/bin/phpwind`.
+
+### Initialize Project CSS
+
+```bash
+vendor/bin/phpwind init
+```
 
 ### Basic Build
 
@@ -69,6 +76,12 @@ vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --minify
 
 ```bash
 vendor/bin/phpwind watch -i resources/css/app.css -o public/css/app.css
+```
+
+### Clean Cache & Binary
+
+```bash
+vendor/bin/phpwind clean
 ```
 
 ### Specific Tailwind Version
@@ -100,6 +113,17 @@ vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --versio
 ```
 
 ### 2. Laravel Integration
+
+#### Artisan Commands
+
+```bash
+php artisan phpwind:init
+php artisan phpwind:build
+php artisan phpwind:watch
+php artisan phpwind:clean
+```
+
+#### Blade Directive
 
 ```blade
 <!DOCTYPE html>

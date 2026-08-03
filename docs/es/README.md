@@ -26,11 +26,11 @@ Detecta automáticamente el Sistema Operativo y la arquitectura de la máquina, 
 
 - 🚫 **Sin Dependencia de Node.js:** Sin `package.json`, `node_modules` ni `npm`.
 - 📦 **Descargador Automático de Binarios:** Detecta Windows, Linux y macOS (x64 y ARM64) y descarga el binario correcto desde GitHub Releases.
-- ⚡ **Ejecutable CLI:** Acceso a `vendor/bin/phpwind` para tareas de `build` y `watch`.
+- ⚡ **Ejecutable CLI:** Acceso a `vendor/bin/phpwind` para tareas de `build`, `watch`, `init` y `clean`.
 - 🔄 **Compatible con Tailwind v3 y v4:** Cambia fácilmente entre versiones (`v4.0.0`, `v3.4.17`, etc.).
 - 🎨 **Helper HTML Inteligente:** La función `phpwind_css()` genera etiquetas `<link>` con hash MD5 automático para invalidación de caché.
 - ⚡ **Middleware Bajo Demanda:** Recompila el CSS automáticamente en peticiones HTTP durante el desarrollo.
-- 🚀 **Integración Nativa con Laravel:** ServiceProvider, comandos Artisan (`phpwind:build`, `phpwind:watch`) y directiva Blade `@phpwind`.
+- 🚀 **Integración Nativa con Laravel:** ServiceProvider, comandos Artisan (`phpwind:build`, `phpwind:watch`, `phpwind:init`, `phpwind:clean`) y directiva Blade `@phpwind`.
 
 ---
 
@@ -45,11 +45,17 @@ composer require leorsousa05/phpwind
 ## 🛠️ Uso de la CLI
 
 ```bash
+# Inicializar archivo de CSS de entrada
+vendor/bin/phpwind init
+
 # Compilar CSS minificado para producción
 vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --minify
 
 # Iniciar modo observador en desarrollo
 vendor/bin/phpwind watch -i resources/css/app.css -o public/css/app.css
+
+# Limpiar binarios descargados y archivos generados
+vendor/bin/phpwind clean
 
 # Compilar especificando una versión de Tailwind
 vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --version=v3.4.17
@@ -76,6 +82,13 @@ vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --versio
 ```
 
 ### Laravel
+
+```bash
+php artisan phpwind:init
+php artisan phpwind:build
+php artisan phpwind:watch
+php artisan phpwind:clean
+```
 
 ```blade
 <!DOCTYPE html>
