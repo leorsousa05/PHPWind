@@ -38,7 +38,8 @@ It automatically detects your Operating System and CPU architecture, downloads t
 - 🎨 **Smart Asset Helper:** Automatic HTML `<link>` tag generation with MD5 cache busting.
 - ⚡ **On-Demand Dev Middleware:** Recompiles CSS dynamically during incoming HTTP requests in development.
 - 🚀 **Laravel First-Class Adapter:** ServiceProvider, Artisan commands (`phpwind:build`, `phpwind:watch`, `phpwind:init`, `phpwind:clean`), and Blade directive `@phpwind`.
-- 🧩 **Framework Agnostic:** Works in Vanilla PHP, Symfony, Slim, CodeIgniter, or custom setups.
+- 🎼 **Symfony Native Bundle (`PHPWindBundle`):** Native Bundle, Twig extension `{{ phpwind_css() }}`, and Console commands (`bin/console phpwind:*`).
+- 🧩 **Framework Agnostic:** Works in Vanilla PHP, Symfony, Laravel, Slim, CodeIgniter, or custom setups.
 
 ---
 
@@ -84,12 +85,6 @@ vendor/bin/phpwind watch -i resources/css/app.css -o public/css/app.css
 vendor/bin/phpwind clean
 ```
 
-### Specific Tailwind Version
-
-```bash
-vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --version=v3.4.17
-```
-
 ---
 
 ## 💻 Usage & Integration
@@ -112,7 +107,41 @@ vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --versio
 </html>
 ```
 
-### 2. Laravel Integration
+### 2. Symfony Integration
+
+Register `PHPWindBundle` in `config/bundles.php`:
+
+```php
+return [
+    PHPWind\Symfony\PHPWindBundle::class => ['all' => true],
+];
+```
+
+#### Symfony Console Commands
+
+```bash
+php bin/console phpwind:init
+php bin/console phpwind:build --minify
+php bin/console phpwind:watch
+php bin/console phpwind:clean
+```
+
+#### Twig Function
+
+```twig
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    {{ phpwind_css('css/app.css') }}
+</head>
+<body class="bg-slate-900 text-white">
+    <h1 class="text-3xl font-bold text-sky-400">Symfony + PHPWind</h1>
+</body>
+</html>
+```
+
+### 3. Laravel Integration
 
 #### Artisan Commands
 

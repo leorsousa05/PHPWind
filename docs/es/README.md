@@ -30,7 +30,8 @@ Detecta automáticamente el Sistema Operativo y la arquitectura de la máquina, 
 - 🔄 **Compatible con Tailwind v3 y v4:** Cambia fácilmente entre versiones (`v4.0.0`, `v3.4.17`, etc.).
 - 🎨 **Helper HTML Inteligente:** La función `phpwind_css()` genera etiquetas `<link>` con hash MD5 automático para invalidación de caché.
 - ⚡ **Middleware Bajo Demanda:** Recompila el CSS automáticamente en peticiones HTTP durante el desarrollo.
-- 🚀 **Integración Nativa con Laravel:** ServiceProvider, comandos Artisan (`phpwind:build`, `phpwind:watch`, `phpwind:init`, `phpwind:clean`) y directiva Blade `@phpwind`.
+- 🎼 **Bundle Nativo para Symfony (`PHPWindBundle`):** Bundle oficial, extensión Twig `{{ phpwind_css() }}` y comandos `bin/console phpwind:*`.
+- 🚀 **Integración Nativa con Laravel:** ServiceProvider, comandos Artisan y directiva Blade `@phpwind`.
 
 ---
 
@@ -42,84 +43,38 @@ composer require phpwind/phpwind
 
 ---
 
-## 🛠️ Uso de la CLI
+## 💻 Integración con Symfony
 
-```bash
-# Inicializar archivo de CSS de entrada
-vendor/bin/phpwind init
-
-# Compilar CSS minificado para producción
-vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --minify
-
-# Iniciar modo observador en desarrollo
-vendor/bin/phpwind watch -i resources/css/app.css -o public/css/app.css
-
-# Limpiar binarios descargados y archivos generados
-vendor/bin/phpwind clean
-
-# Compilar especificando una versión de Tailwind
-vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --version=v3.4.17
-```
-
----
-
-## 💻 Ejemplos de Integración
-
-### Vanilla PHP
+Registre el `PHPWindBundle` en `config/bundles.php`:
 
 ```php
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Proyecto PHPWind</title>
-    <?php echo phpwind_css('css/app.css'); ?>
-</head>
-<body class="bg-slate-900 text-white p-8">
-    <h1 class="text-3xl font-bold text-sky-400">Tailwind CSS en PHP!</h1>
-</body>
-</html>
+return [
+    PHPWind\Symfony\PHPWindBundle::class => ['all' => true],
+];
 ```
 
-### Laravel
+### Comandos de Symfony Console
 
 ```bash
-php artisan phpwind:init
-php artisan phpwind:build
-php artisan phpwind:watch
-php artisan phpwind:clean
+php bin/console phpwind:init
+php bin/console phpwind:build --minify
+php bin/console phpwind:watch
+php bin/console phpwind:clean
 ```
 
-```blade
+### Función en Plantillas Twig
+
+```twig
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
     <meta charset="UTF-8">
-    @phpwind('css/app.css')
+    {{ phpwind_css('css/app.css') }}
 </head>
 <body class="bg-slate-900 text-white">
-    <div class="p-8">
-        <h1 class="text-2xl font-bold text-teal-400">Laravel + PHPWind</h1>
-    </div>
+    <h1 class="text-3xl font-bold text-sky-400">Symfony + PHPWind</h1>
 </body>
 </html>
-```
-
----
-
-## ⚙️ Referencia de Configuração
-
-```php
-use PHPWind\Config\PHPWindConfig;
-
-$config = new PHPWindConfig(
-    inputCss: 'resources/css/app.css',
-    outputCss: 'public/css/app.css',
-    binaryDir: 'vendor/bin/tailwind-cli',
-    version: 'v4.0.0', // Acepta 'v4.0.0', 'v3.4.17', etc.
-    minify: true,
-    watch: false
-);
 ```
 
 ---
