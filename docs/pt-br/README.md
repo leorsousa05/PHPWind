@@ -1,6 +1,10 @@
-# 🌬️ PHPWind — Documentação (Português)
+<p align="center">
+  <img src="../../assets/phpwind_mascot.jpg" alt="PHPWind Mascot" width="600" style="border-radius: 12px;" />
+</p>
 
-> **Integração Tailwind CSS v3 & v4 CLI para PHP Sem Depender do Node.js**
+<p align="center">
+  <strong>Integração Tailwind CSS v3 & v4 CLI para PHP Sem Depender do Node.js</strong>
+</p>
 
 ---
 

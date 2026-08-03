@@ -1,6 +1,10 @@
-# 🌬️ PHPWind — Documentación (Español)
+<p align="center">
+  <img src="../../assets/phpwind_mascot.jpg" alt="PHPWind Mascot" width="600" style="border-radius: 12px;" />
+</p>
 
-> **Integración CLI de Tailwind CSS v3 y v4 para PHP Sin Dependencia de Node.js**
+<p align="center">
+  <strong>Integración CLI de Tailwind CSS v3 y v4 para PHP Sin Dependencia de Node.js</strong>
+</p>
 
 ---
 
@@ -90,7 +94,7 @@ vendor/bin/phpwind build -i resources/css/app.css -o public/css/app.css --versio
 
 ---
 
-## ⚙️ Referencia de Configuración
+## ⚙️ Referencia de Configuração
 
 ```php
 use PHPWind\Config\PHPWindConfig;

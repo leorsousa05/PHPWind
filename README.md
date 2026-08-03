@@ -1,10 +1,16 @@
-# 🌬️ PHPWind
+<p align="center">
+  <img src="assets/phpwind_mascot.jpg" alt="PHPWind Mascot" width="600" style="border-radius: 12px;" />
+</p>
 
-> **Zero-Node Tailwind CSS v3 & v4 CLI Integration for PHP**
+<p align="center">
+  <strong>Zero-Node Tailwind CSS v3 & v4 CLI Integration for PHP</strong>
+</p>
 
-[![Latest Tag](https://img.shields.io/github/v/tag/leorsousa05/PHPWind?style=flat-square&label=version)](https://github.com/leorsousa05/PHPWind/releases)
-[![License](https://img.shields.io/github/license/leorsousa05/PHPWind?style=flat-square)](LICENSE)
-[![PHP Version](https://img.shields.io/badge/PHP-%3E%3D%208.1-777BB4.svg?style=flat-square)](https://php.net)
+<p align="center">
+  <a href="https://github.com/leorsousa05/PHPWind/releases"><img src="https://img.shields.io/github/v/tag/leorsousa05/PHPWind?style=flat-square&label=version" alt="Latest Tag"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/leorsousa05/PHPWind?style=flat-square" alt="License"></a>
+  <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-%3E%3D%208.1-777BB4.svg?style=flat-square" alt="PHP Version"></a>
+</p>
 
 ---
 

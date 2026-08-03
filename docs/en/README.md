@@ -1,6 +1,10 @@
-# 🌬️ PHPWind — Documentation (English)
+<p align="center">
+  <img src="../../assets/phpwind_mascot.jpg" alt="PHPWind Mascot" width="600" style="border-radius: 12px;" />
+</p>
 
-> **Zero-Node Tailwind CSS v3 & v4 CLI Integration for PHP**
+<p align="center">
+  <strong>Zero-Node Tailwind CSS v3 & v4 CLI Integration for PHP</strong>
+</p>
 
 ---
 
