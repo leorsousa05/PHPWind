@@ -19,24 +19,30 @@ class Downloader
         }
 
         $url = PlatformResolver::getDownloadUrl($version);
-        $content = @file_get_contents($url);
 
-        if ($content === false) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $content = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-            if ($httpCode !== 200 || empty($content)) {
-                throw new RuntimeException("Failed to download Tailwind CLI binary from {$url}");
-            }
+        $fp = fopen($binaryPath, 'w+');
+        if ($fp === false) {
+            throw new RuntimeException("Could not open file for writing at {$binaryPath}");
         }
 
-        file_put_contents($binaryPath, $content);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+
+        $success = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        fclose($fp);
+
+        if (!$success || $httpCode !== 200) {
+            if (file_exists($binaryPath)) {
+                unlink($binaryPath);
+            }
+            throw new RuntimeException("Failed to download Tailwind CLI binary from {$url} (HTTP {$httpCode})");
+        }
 
         if (PHP_OS_FAMILY !== 'Windows') {
             chmod($binaryPath, 0755);
