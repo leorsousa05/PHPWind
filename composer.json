@@ -1,12 +1,13 @@
 {
-    "name": "phpwind/phpwind",
+    "name": "leorsousa05/phpwind",
     "version": "1.0.0",
     "description": "Tailwind CSS v3 & v4 standalone CLI wrapper for PHP projects without Node.js dependency",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "PHPWind Team"
+            "name": "Leandro Sousa",
+            "homepage": "https://github.com/leorsousa05"
         }
     ],
     "require": {

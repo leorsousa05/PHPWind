@@ -2,9 +2,8 @@
 
 > **Zero-Node Tailwind CSS v3 & v4 CLI Integration for PHP**
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/phpwind/phpwind.svg?style=flat-square)](https://packagist.org/packages/phpwind/phpwind)
-[![Total Downloads](https://img.shields.io/packagist/dt/phpwind/phpwind.svg?style=flat-square)](https://packagist.org/packages/phpwind/phpwind)
-[![License](https://img.shields.io/packagist/l/phpwind/phpwind.svg?style=flat-square)](https://packagist.org/packages/phpwind/phpwind)
+[![Latest Tag](https://img.shields.io/github/v/tag/leorsousa05/PHPWind?style=flat-square&label=version)](https://github.com/leorsousa05/PHPWind/releases)
+[![License](https://img.shields.io/github/license/leorsousa05/PHPWind?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/badge/PHP-%3E%3D%208.1-777BB4.svg?style=flat-square)](https://php.net)
 
 ---
@@ -39,7 +38,7 @@ It automatically detects your Operating System and CPU architecture, downloads t
 ## 📥 Installation
 
 ```bash
-composer require phpwind/phpwind
+composer require leorsousa05/phpwind
 ```
 
 ---

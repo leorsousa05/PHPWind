@@ -33,7 +33,7 @@ It automatically detects your host Operating System and CPU architecture, downlo
 ## 📥 Installation
 
 ```bash
-composer require phpwind/phpwind
+composer require leorsousa05/phpwind
 ```
 
 ---
