@@ -1,5 +1,5 @@
 {
-    "name": "leorsousa05/phpwind",
+    "name": "phpwind/phpwind",
     "version": "1.3.0",
     "description": "Tailwind CSS v3 & v4 standalone CLI wrapper for PHP projects without Node.js dependency",
     "type": "library",

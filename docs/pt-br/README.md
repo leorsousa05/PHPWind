@@ -37,7 +37,7 @@ Ele detecta automaticamente o Sistema Operacional e a arquitetura da sua máquin
 ## 📥 Instalação
 
 ```bash
-composer require leorsousa05/phpwind
+composer require phpwind/phpwind
 ```
 
 ---
