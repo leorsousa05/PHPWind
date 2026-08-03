@@ -25,13 +25,13 @@ use PHPWind\Command\CleanHandler;
 use PHPWind\Command\InitHandler;
 use PHPWind\Compiler\TailwindCompiler;
 use PHPWind\Config\PHPWindConfig;
+use PHPWind\Console\ViteStyleWizard;
 
 $args = array_slice($argv, 1);
 $action = $args[0] ?? 'build';
 
 $minify = in_array('--minify', $args) || in_array('-m', $args);
 $watch = $action === 'watch' || in_array('--watch', $args) || in_array('-w', $args);
-$noInteraction = in_array('--no-interaction', $args) || in_array('-n', $args);
 
 $input = 'resources/css/app.css';
 $output = 'public/css/app.css';
@@ -50,48 +50,18 @@ foreach ($args as $index => $arg) {
 }
 
 if ($action === 'init') {
-    $createSampleHtml = false;
-
-    if (!$noInteraction && function_exists('stream_isatty') && stream_isatty(STDIN)) {
-        fwrite(STDOUT, "\n  🌬️ Welcome to PHPWind Interactive Setup Wizard!\n\n");
-        
-        fwrite(STDOUT, "Input CSS path [resources/css/app.css]: ");
-        $readInput = trim(fgets(STDIN));
-        if ($readInput !== '') {
-            $input = $readInput;
-        }
-
-        fwrite(STDOUT, "Output CSS path [public/css/app.css]: ");
-        $readOutput = trim(fgets(STDIN));
-        if ($readOutput !== '') {
-            $output = $readOutput;
-        }
-
-        fwrite(STDOUT, "Tailwind version (v4.0.0, v3.4.17) [v4.0.0]: ");
-        $readVersion = trim(fgets(STDIN));
-        if ($readVersion !== '') {
-            $version = $readVersion;
-        }
-
-        fwrite(STDOUT, "Create sample index.php file? (y/N) [N]: ");
-        $readSample = strtolower(trim(fgets(STDIN)));
-        $createSampleHtml = $readSample === 'y' || $readSample === 'yes';
-        fwrite(STDOUT, "\n");
-    }
+    $wizardData = ViteStyleWizard::run($args);
 
     $config = new PHPWindConfig(
-        inputCss: $input,
-        outputCss: $output,
-        version: $version
+        inputCss: $wizardData['input'],
+        outputCss: $wizardData['output'],
+        version: $wizardData['version']
     );
 
     $handler = new InitHandler();
-    $handler->handle($config, $createSampleHtml);
+    $handler->handle($config, $wizardData['create_sample']);
 
-    fwrite(STDOUT, "✓ PHPWind initialized input CSS at {$input}\n");
-    if ($createSampleHtml) {
-        fwrite(STDOUT, "✓ Sample index.php created successfully.\n");
-    }
+    ViteStyleWizard::printNextSteps($wizardData['input'], $wizardData['output'], $wizardData['preset']);
     exit(0);
 }
 
