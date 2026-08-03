@@ -1,0 +1,7 @@
+/vendor
+/bin/tailwind-cli
+/.idea
+/.vscode
+*.log
+phpunit.result.cache
+.DS_Store

@@ -1,0 +1,55 @@
+#!/usr/bin/env php
+<?php
+
+$autoloadFiles = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+    getcwd() . '/vendor/autoload.php',
+];
+
+$loaded = false;
+foreach ($autoloadFiles as $file) {
+    if (file_exists($file)) {
+        require_once $file;
+        $loaded = true;
+        break;
+    }
+}
+
+if (!$loaded) {
+    fwrite(STDERR, "Autoload file not found. Please run composer install.\n");
+    exit(1);
+}
+
+use PHPWind\Compiler\TailwindCompiler;
+use PHPWind\Config\PHPWindConfig;
+
+$args = array_slice($argv, 1);
+$action = $args[0] ?? 'build';
+
+$minify = in_array('--minify', $args) || in_array('-m', $args);
+$watch = $action === 'watch' || in_array('--watch', $args) || in_array('-w', $args);
+
+$input = 'resources/css/app.css';
+$output = 'public/css/app.css';
+
+foreach ($args as $index => $arg) {
+    if (($arg === '-i' || $arg === '--input') && isset($args[$index + 1])) {
+        $input = $args[$index + 1];
+    }
+    if (($arg === '-o' || $arg === '--output') && isset($args[$index + 1])) {
+        $output = $args[$index + 1];
+    }
+}
+
+$config = new PHPWindConfig(
+    inputCss: $input,
+    outputCss: $output,
+    minify: $minify,
+    watch: $watch
+);
+
+$compiler = new TailwindCompiler();
+$exitCode = $compiler->compile($config);
+
+exit($exitCode);
