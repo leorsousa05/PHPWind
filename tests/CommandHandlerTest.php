@@ -3,6 +3,7 @@
 namespace PHPWind\Tests;
 
 use PHPUnit\Framework\TestCase;
+use PHPWind\Binary\PlatformResolver;
 use PHPWind\Command\CleanHandler;
 use PHPWind\Command\InitHandler;
 use PHPWind\Config\PHPWindConfig;
@@ -41,7 +42,7 @@ class CommandHandlerTest extends TestCase
     {
         $binaryDir = $this->tempDir . '/bin/tailwind-cli';
         mkdir($binaryDir, 0755, true);
-        $binaryFile = $binaryDir . '/tailwind.exe';
+        $binaryFile = $binaryDir . DIRECTORY_SEPARATOR . PlatformResolver::getLocalBinaryFilename();
         file_put_contents($binaryFile, 'dummy');
 
         $outputCss = $this->tempDir . '/public/css/app.css';

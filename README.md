@@ -33,7 +33,7 @@ It automatically detects your Operating System and CPU architecture, downloads t
 
 - 🚫 **Zero Node.js Dependency:** No `package.json`, `node_modules`, or `npm` required.
 - 📦 **Automatic Binary Downloader:** Detects OS (Windows, Linux, macOS) & Arch (x64, ARM64) and fetches official binaries.
-- ⚡ **CLI Companion:** Built-in executable `vendor/bin/phpwind` for `build`, `watch`, `init`, and `clean`.
+- ⚡ **CLI Companion:** Built-in executable `vendor/bin/phpwind` with `build`, `watch`, `init`, and `clean`.
 - 🔄 **Tailwind v3 & v4 Compatible:** Seamlessly switch versions (`v4.0.0`, `v3.4.17`, etc.).
 - 🎨 **Smart Asset Helper:** Automatic HTML `<link>` tag generation with MD5 cache busting.
 - ⚡ **On-Demand Dev Middleware:** Recompiles CSS dynamically during incoming HTTP requests in development.
@@ -45,7 +45,7 @@ It automatically detects your Operating System and CPU architecture, downloads t
 ## 📥 Installation
 
 ```bash
-composer require leorsousa05/phpwind
+composer require phpwind/phpwind
 ```
 
 ---
