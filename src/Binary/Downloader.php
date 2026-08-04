@@ -1,11 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Binary;
 
-use RuntimeException;
+use PHPWind\Exception\BinaryDownloadException;
 
 class Downloader
 {
+    public function __construct(
+        private int $timeoutSeconds = 120,
+        private bool $verifySsl = true
+    ) {}
+
+    /**
+     * @deprecated Use BinaryManager::resolveBinaryPath() for version-aware binary resolution.
+     */
     public function ensureBinaryInstalled(string $targetDirectory, string $version = 'v4.0.0'): string
     {
         if (!is_dir($targetDirectory)) {
@@ -15,39 +25,74 @@ class Downloader
         $binaryPath = rtrim($targetDirectory, '/\\') . DIRECTORY_SEPARATOR . PlatformResolver::getLocalBinaryFilename();
 
         if (file_exists($binaryPath)) {
-            return realpath($binaryPath);
+            return realpath($binaryPath) ?: $binaryPath;
         }
 
-        $url = PlatformResolver::getDownloadUrl($version);
+        $this->download(PlatformResolver::getDownloadUrl($version), $binaryPath);
 
-        $fp = fopen($binaryPath, 'w+');
+        return realpath($binaryPath) ?: $binaryPath;
+    }
+
+    /**
+     * @throws BinaryDownloadException
+     */
+    public function download(string $url, string $destinationPath): void
+    {
+        $directory = dirname($destinationPath);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $fp = fopen($destinationPath, 'w+');
         if ($fp === false) {
-            throw new RuntimeException("Could not open file for writing at {$binaryPath}");
+            throw new BinaryDownloadException("Could not open file for writing at {$destinationPath}");
         }
 
+        try {
+            $result = $this->executeRequest($url, $fp);
+        } finally {
+            fclose($fp);
+        }
+
+        if (!$result['success'] || $result['httpCode'] !== 200) {
+            if (file_exists($destinationPath)) {
+                unlink($destinationPath);
+            }
+
+            throw new BinaryDownloadException(
+                "Failed to download Tailwind CLI binary from {$url} (HTTP {$result['httpCode']})" . ($result['error'] !== '' ? ": {$result['error']}" : '')
+            );
+        }
+
+        if (PHP_OS_FAMILY !== 'Windows') {
+            chmod($destinationPath, 0755);
+        }
+    }
+
+    /**
+     * @param resource $fp
+     * @return array{success: bool, httpCode: int, error: string}
+     */
+    protected function executeRequest(string $url, $fp): array
+    {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verifySsl);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $this->verifySsl ? 2 : 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeoutSeconds);
         curl_setopt($ch, CURLOPT_FILE, $fp);
 
         $success = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
         curl_close($ch);
-        fclose($fp);
 
-        if (!$success || $httpCode !== 200) {
-            if (file_exists($binaryPath)) {
-                unlink($binaryPath);
-            }
-            throw new RuntimeException("Failed to download Tailwind CLI binary from {$url} (HTTP {$httpCode})");
-        }
-
-        if (PHP_OS_FAMILY !== 'Windows') {
-            chmod($binaryPath, 0755);
-        }
-
-        return realpath($binaryPath);
+        return [
+            'success' => (bool) $success,
+            'httpCode' => (int) $httpCode,
+            'error' => $error,
+        ];
     }
 }

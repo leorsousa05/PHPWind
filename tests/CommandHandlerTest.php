@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Tests;
 
 use PHPUnit\Framework\TestCase;
@@ -7,9 +9,11 @@ use PHPWind\Binary\PlatformResolver;
 use PHPWind\Command\CleanHandler;
 use PHPWind\Command\InitHandler;
 use PHPWind\Config\PHPWindConfig;
+use PHPWind\Tests\Concerns\RemovesTempDirectories;
 
 class CommandHandlerTest extends TestCase
 {
+    use RemovesTempDirectories;
     private string $tempDir;
 
     protected function setUp(): void
@@ -56,21 +60,5 @@ class CommandHandlerTest extends TestCase
 
         $this->assertFileDoesNotExist($binaryFile);
         $this->assertFileDoesNotExist($outputCss);
-    }
-
-    private function removeDirectory(string $dir): void
-    {
-        foreach (scandir($dir) as $item) {
-            if ($item === '.' || $item === '..') {
-                continue;
-            }
-            $path = $dir . DIRECTORY_SEPARATOR . $item;
-            if (is_dir($path)) {
-                $this->removeDirectory($path);
-            } else {
-                unlink($path);
-            }
-        }
-        rmdir($dir);
     }
 }

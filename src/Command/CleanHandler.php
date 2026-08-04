@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Command;
 
-use PHPWind\Binary\PlatformResolver;
+use PHPWind\Binary\BinaryManager;
 use PHPWind\Config\PHPWindConfig;
 
 class CleanHandler
 {
     public function handle(PHPWindConfig $config, bool $cleanOutput = false): bool
     {
-        $binaryPath = rtrim($config->binaryDir, '/\\') . DIRECTORY_SEPARATOR . PlatformResolver::getLocalBinaryFilename();
+        $config->validate();
 
-        if (file_exists($binaryPath)) {
-            unlink($binaryPath);
-        }
+        $manager = new BinaryManager($config->binaryDir);
+        $manager->clearCachedBinary();
 
         if (is_dir($config->binaryDir)) {
             @rmdir($config->binaryDir);

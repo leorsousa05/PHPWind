@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Binary;
 
 use PHPWind\Config\PHPWindConfig;
-use RuntimeException;
+use PHPWind\Exception\BinaryExecutionException;
 
 class Runner
 {
@@ -34,7 +36,7 @@ class Runner
         $process = proc_open($cmdString, $descriptors, $pipes);
 
         if (!is_resource($process)) {
-            throw new RuntimeException("Could not execute process: {$cmdString}");
+            throw new BinaryExecutionException("Could not execute process: {$cmdString}");
         }
 
         return proc_close($process);

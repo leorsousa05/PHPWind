@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Binary;
 
 class PlatformResolver
@@ -44,5 +46,13 @@ class PlatformResolver
     public static function getLocalBinaryFilename(): string
     {
         return PHP_OS_FAMILY === 'Windows' ? 'tailwind.exe' : 'tailwind';
+    }
+
+    public static function getVersionedBinaryName(string $version): string
+    {
+        $version = ltrim($version, 'v');
+        $extension = PHP_OS_FAMILY === 'Windows' ? '.exe' : '';
+
+        return "tailwind-v{$version}{$extension}";
     }
 }

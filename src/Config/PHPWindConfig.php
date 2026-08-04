@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Config;
+
+use PHPWind\Exception\InvalidConfigurationException;
 
 class PHPWindConfig
 {
@@ -23,5 +27,30 @@ class PHPWindConfig
             minify: (bool) ($config['minify'] ?? false),
             watch: (bool) ($config['watch'] ?? false)
         );
+    }
+
+    /**
+     * @throws InvalidConfigurationException
+     */
+    public function validate(): void
+    {
+        if (trim($this->inputCss) === '') {
+            throw new InvalidConfigurationException('inputCss cannot be empty.');
+        }
+
+        if (trim($this->outputCss) === '') {
+            throw new InvalidConfigurationException('outputCss cannot be empty.');
+        }
+
+        if (trim($this->binaryDir) === '') {
+            throw new InvalidConfigurationException('binaryDir cannot be empty.');
+        }
+
+        $version = ltrim($this->version, 'v');
+        if ($version === '' || !preg_match('/^\d+\.\d+\.\d+/', $version)) {
+            throw new InvalidConfigurationException(
+                sprintf('version must be a valid semantic version (e.g., v4.0.0). Got: "%s"', $this->version)
+            );
+        }
     }
 }
