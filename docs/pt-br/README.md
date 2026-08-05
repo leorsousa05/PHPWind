@@ -26,12 +26,15 @@ Ele detecta automaticamente o Sistema Operacional e a arquitetura da sua máquin
 
 - 🚫 **Zero Dependência do Node.js:** Sem necessidade de `package.json`, `node_modules` ou `npm`.
 - 📦 **Downloader Automático de Binários:** Detecta Windows, Linux e macOS (x64 e ARM64) e baixa o binário correto do GitHub Releases.
+- 🔒 **Cache de Binário por Versão:** Rebaixa automaticamente o binário correto ao alternar versões.
 - ⚡ **Executável CLI:** Acesse `vendor/bin/phpwind` para comandos `build`, `watch`, `init` e `clean`.
-- 🔄 **Compatível com Tailwind v3 e v4:** Alterne facilmente entre versões (`v4.0.0`, `v3.4.17`, etc.).
+- 🧩 **API Programática em PHP:** Compile, observe e gerencie assets diretamente pelo PHP.
 - 🎨 **Helper HTML Inteligente:** A função `phpwind_css()` gera tags `<link>` com hash MD5 automático para cache-busting.
+- 📋 **Manifesto de Assets:** Manifesto JSON opcional para URLs versionadas compatíveis com CDN.
 - ⚡ **Middleware On-Demand:** Recompila o CSS automaticamente em requisições HTTP durante o desenvolvimento.
 - 🎼 **Bundle Nativo para Symfony (`PHPWindBundle`):** Bundle oficial, extensão Twig `{{ phpwind_css() }}` e comandos `bin/console phpwind:*`.
 - 🚀 **Integração Nativa com Laravel:** ServiceProvider, comandos Artisan e diretiva Blade `@phpwind`.
+- 🧪 **Bem Testado:** Cobertura completa com PHPUnit para os componentes principais.
 
 ---
 
@@ -75,6 +78,74 @@ php bin/console phpwind:clean
     <h1 class="text-3xl font-bold text-sky-400">Symfony + PHPWind</h1>
 </body>
 </html>
+```
+
+---
+
+## 🧩 API Programática
+
+### Compilar com saída estruturada
+
+```php
+use PHPWind\Compiler\TailwindCompiler;
+use PHPWind\Config\PHPWindConfig;
+
+$config = new PHPWindConfig(
+    inputCss: 'resources/css/app.css',
+    outputCss: 'public/css/app.css',
+    version: 'v4.0.0',
+    minify: true
+);
+
+$compiler = new TailwindCompiler();
+
+$exitCode = $compiler->compile($config);           // compatível com versões anteriores
+$result = $compiler->compileResult($config);       // resultado estruturado
+```
+
+### Gerenciamento de binário por versão
+
+```php
+use PHPWind\Binary\BinaryManager;
+
+$manager = new BinaryManager('vendor/bin/tailwind-cli');
+$binaryPath = $manager->resolveBinaryPath('v4.0.0');
+$manager->clearCachedBinary();
+```
+
+### Validação de configuração
+
+```php
+use PHPWind\Config\PHPWindConfig;
+
+$config = new PHPWindConfig(version: 'v4.0.0');
+$config->validate();
+```
+
+---
+
+## 📋 Manifesto de Assets
+
+```php
+use PHPWind\Manifest\AssetManifest;
+use PHPWind\Helper\AssetHelper;
+
+$manifest = AssetManifest::generate('public', ['css/app.css']);
+$manifest->write('public/phpwind-manifest.json');
+
+$manifest = AssetManifest::read('public/phpwind-manifest.json');
+echo AssetHelper::cssFromManifest($manifest, 'css/app.css');
+```
+
+> [!NOTE]
+> `AssetHelper::css()` continua usando cache busting por query string por padrão. O manifesto é opcional.
+
+---
+
+## 🧪 Executando os Testes
+
+```bash
+vendor/bin/phpunit tests
 ```
 
 ---

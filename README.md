@@ -33,12 +33,15 @@ It automatically detects your Operating System and CPU architecture, downloads t
 
 - 🚫 **Zero Node.js Dependency:** No `package.json`, `node_modules`, or `npm` required.
 - 📦 **Automatic Binary Downloader:** Detects OS (Windows, Linux, macOS) & Arch (x64, ARM64) and fetches official binaries.
+- 🔒 **Version-Aware Binary Cache:** Automatically re-downloads the Tailwind CLI when you switch versions (`v4.0.0`, `v3.4.17`, etc.).
 - ⚡ **CLI Companion:** Built-in executable `vendor/bin/phpwind` with `build`, `watch`, `init`, and `clean`.
-- 🔄 **Tailwind v3 & v4 Compatible:** Seamlessly switch versions (`v4.0.0`, `v3.4.17`, etc.).
+- 🧩 **Programmatic PHP API:** Build, watch, and manage assets directly from PHP code.
 - 🎨 **Smart Asset Helper:** Automatic HTML `<link>` tag generation with MD5 cache busting.
+- 📋 **Asset Manifest:** Optional JSON manifest for CDN-friendly, versioned asset URLs.
 - ⚡ **On-Demand Dev Middleware:** Recompiles CSS dynamically during incoming HTTP requests in development.
 - 🚀 **Laravel First-Class Adapter:** ServiceProvider, Artisan commands (`phpwind:build`, `phpwind:watch`, `phpwind:init`, `phpwind:clean`), and Blade directive `@phpwind`.
 - 🎼 **Symfony Native Bundle (`PHPWindBundle`):** Native Bundle, Twig extension `{{ phpwind_css() }}`, and Console commands (`bin/console phpwind:*`).
+- 🧪 **Well Tested:** Comprehensive PHPUnit coverage for binary management, compilation, and asset helpers.
 - 🧩 **Framework Agnostic:** Works in Vanilla PHP, Symfony, Laravel, Slim, CodeIgniter, or custom setups.
 
 ---
@@ -168,6 +171,102 @@ php artisan phpwind:clean
 </body>
 </html>
 ```
+
+---
+
+## 🧩 Programmatic API
+
+PHPWind exposes a clean PHP API for advanced use cases and framework integrations.
+
+### Compile with structured output
+
+```php
+use PHPWind\Compiler\TailwindCompiler;
+use PHPWind\Config\PHPWindConfig;
+
+$config = new PHPWindConfig(
+    inputCss: 'resources/css/app.css',
+    outputCss: 'public/css/app.css',
+    version: 'v4.0.0',
+    minify: true
+);
+
+$compiler = new TailwindCompiler();
+
+// Backward-compatible exit code
+$exitCode = $compiler->compile($config);
+
+// Or use compileResult() for structured output
+$result = $compiler->compileResult($config);
+echo "Compiled in {$result->durationMs}ms with exit code {$result->exitCode}";
+```
+
+### Version-aware binary management
+
+```php
+use PHPWind\Binary\BinaryManager;
+
+$manager = new BinaryManager('vendor/bin/tailwind-cli');
+$binaryPath = $manager->resolveBinaryPath('v4.0.0');
+
+// Switching versions automatically fetches the correct binary:
+$binaryPath = $manager->resolveBinaryPath('v3.4.17');
+
+// Clean cached binaries
+$manager->clearCachedBinary(); // all versions
+$manager->clearCachedBinary('v4.0.0'); // specific version
+```
+
+### Configuration validation
+
+```php
+use PHPWind\Config\PHPWindConfig;
+use PHPWind\Exception\InvalidConfigurationException;
+
+try {
+    $config = new PHPWindConfig(version: 'not-a-version');
+    $config->validate();
+} catch (InvalidConfigurationException $e) {
+    echo $e->getMessage();
+}
+```
+
+---
+
+## 📋 Asset Manifest
+
+For CDN deployments or when you need persistent asset versioning, generate a JSON manifest:
+
+```php
+use PHPWind\Manifest\AssetManifest;
+
+$manifest = AssetManifest::generate('public', ['css/app.css']);
+$manifest->write('public/phpwind-manifest.json');
+```
+
+Then render versioned URLs from the manifest:
+
+```php
+use PHPWind\Helper\AssetHelper;
+use PHPWind\Manifest\AssetManifest;
+
+$manifest = AssetManifest::read('public/phpwind-manifest.json');
+echo AssetHelper::cssFromManifest($manifest, 'css/app.css');
+// <link rel="stylesheet" href="/css/app.css?v=a1b2c3d4">
+```
+
+> [!NOTE]
+> `AssetHelper::css()` continues to work with query-string cache busting by default. The manifest is opt-in.
+
+---
+
+## 🧪 Running Tests
+
+```bash
+vendor/bin/phpunit tests
+```
+
+The test suite covers platform resolution, binary download/management, compilation orchestration, configuration validation, asset helpers, and framework integrations.
 
 ---
 

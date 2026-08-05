@@ -11,6 +11,10 @@ class Runner
 {
     public function run(string $binaryPath, PHPWindConfig $config): int
     {
+        if (str_contains($binaryPath, "\0")) {
+            throw new BinaryExecutionException("Invalid binary path containing null bytes");
+        }
+
         $command = [
             escapeshellcmd($binaryPath),
             '-i', escapeshellarg($config->inputCss),

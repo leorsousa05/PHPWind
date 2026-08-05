@@ -20,6 +20,7 @@ class BinaryManagerTest extends TestCase
     {
         $this->tempDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'phpwind_binary_manager_test_' . uniqid();
         mkdir($this->tempDir, 0755, true);
+        $this->tempDir = realpath($this->tempDir) ?: $this->tempDir;
     }
 
     protected function tearDown(): void
