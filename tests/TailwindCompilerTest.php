@@ -6,6 +6,7 @@ namespace PHPWind\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PHPWind\Binary\BinaryManager;
+use PHPWind\Binary\ProcessResult;
 use PHPWind\Binary\Runner;
 use PHPWind\Compiler\CompilationResult;
 use PHPWind\Compiler\TailwindCompiler;
@@ -22,7 +23,7 @@ class TailwindCompilerTest extends TestCase
         $binaryManager->method('resolveBinaryPath')->willReturn('/path/to/tailwind');
 
         $runner = $this->createMock(Runner::class);
-        $runner->method('run')->willReturn(42);
+        $runner->method('runResult')->willReturn(new ProcessResult(exitCode: 42));
 
         $compiler = new TailwindCompiler($binaryManager, $runner);
         $exitCode = $compiler->compile(new PHPWindConfig());
@@ -40,9 +41,9 @@ class TailwindCompilerTest extends TestCase
 
         $runner = $this->createMock(Runner::class);
         $runner->expects($this->once())
-            ->method('run')
+            ->method('runResult')
             ->with('/path/to/tailwind', $this->isInstanceOf(PHPWindConfig::class))
-            ->willReturn(0);
+            ->willReturn(new ProcessResult(exitCode: 0));
 
         $compiler = new TailwindCompiler($binaryManager, $runner);
         $result = $compiler->compileResult(new PHPWindConfig(outputCss: 'public/css/app.css'));
@@ -51,6 +52,25 @@ class TailwindCompilerTest extends TestCase
         $this->assertSame(0, $result->exitCode);
         $this->assertSame('public/css/app.css', $result->outputPath);
         $this->assertGreaterThanOrEqual(0, $result->durationMs);
+    }
+
+    public function testCompileResultPropagatesProcessOutput(): void
+    {
+        $binaryManager = $this->createMock(BinaryManager::class);
+        $binaryManager->method('resolveBinaryPath')->willReturn('/path/to/tailwind');
+
+        $runner = $this->createMock(Runner::class);
+        $runner->method('runResult')->willReturn(new ProcessResult(
+            exitCode: 1,
+            stdout: 'some stdout',
+            stderr: 'some stderr'
+        ));
+
+        $compiler = new TailwindCompiler($binaryManager, $runner);
+        $result = $compiler->compileResult(new PHPWindConfig());
+
+        $this->assertSame('some stdout', $result->stdout);
+        $this->assertSame('some stderr', $result->stderr);
     }
 
     public function testCompileResultValidatesConfig(): void
@@ -80,7 +100,7 @@ class TailwindCompilerTest extends TestCase
         $binaryManager->method('resolveBinaryPath')->willReturn('/path/to/tailwind');
 
         $runner = $this->createMock(Runner::class);
-        $runner->method('run')
+        $runner->method('runResult')
             ->willThrowException(new BinaryExecutionException('exec failed'));
 
         $compiler = new TailwindCompiler($binaryManager, $runner);

@@ -29,6 +29,18 @@ class PHPWindConfig
         );
     }
 
+    public function toArray(): array
+    {
+        return [
+            'input_css' => $this->inputCss,
+            'output_css' => $this->outputCss,
+            'binary_dir' => $this->binaryDir,
+            'version' => $this->version,
+            'minify' => $this->minify,
+            'watch' => $this->watch,
+        ];
+    }
+
     /**
      * @throws InvalidConfigurationException
      */

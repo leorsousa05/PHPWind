@@ -20,6 +20,8 @@ class PHPWindServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->resolveRelativeConfigPaths();
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../../config/phpwind.php' => config_path('phpwind.php'),
@@ -37,5 +39,30 @@ class PHPWindServiceProvider extends ServiceProvider
             $path = $expression ?: "'css/app.css'";
             return "<?php echo \\PHPWind\\Helper\\AssetHelper::css({$path}); ?>";
         });
+    }
+
+    /**
+     * The package config uses framework-agnostic relative paths. When a value
+     * still matches a shipped default, resolve it to a Laravel absolute path so
+     * published/packaged usage keeps the original behavior. User-customized
+     * values are left untouched.
+     */
+    private function resolveRelativeConfigPaths(): void
+    {
+        $config = $this->app['config']->get('phpwind', []);
+
+        $defaults = [
+            'input_css' => ['resources/css/app.css', resource_path('css/app.css')],
+            'output_css' => ['public/css/app.css', public_path('css/app.css')],
+            'binary_dir' => ['vendor/bin/tailwind-cli', base_path('vendor/bin/tailwind-cli')],
+        ];
+
+        foreach ($defaults as $key => [$relative, $absolute]) {
+            if (($config[$key] ?? null) === $relative) {
+                $config[$key] = $absolute;
+            }
+        }
+
+        $this->app['config']->set('phpwind', $config);
     }
 }

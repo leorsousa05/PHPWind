@@ -30,13 +30,15 @@ class TailwindCompiler
 
         $start = hrtime(true);
         $binaryPath = $this->binaryManager->resolveBinaryPath($config->version);
-        $exitCode = $this->runner->run($binaryPath, $config);
+        $result = $this->runner->runResult($binaryPath, $config);
         $durationMs = (int) round((hrtime(true) - $start) / 1_000_000);
 
         return new CompilationResult(
-            exitCode: $exitCode,
+            exitCode: $result->exitCode,
             outputPath: $config->outputCss,
-            durationMs: $durationMs
+            durationMs: $durationMs,
+            stdout: $result->stdout,
+            stderr: $result->stderr
         );
     }
 }

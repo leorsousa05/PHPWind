@@ -8,10 +8,11 @@ use PHPWind\Manifest\AssetManifest;
 
 class AssetHelper
 {
-    public static function css(string $path = 'css/app.css', bool $versioned = true): string
+    public static function css(string $path = 'css/app.css', bool $versioned = true, ?string $publicDir = null): string
     {
         $href = '/' . ltrim($path, '/');
-        $publicPath = getcwd() . '/public/' . ltrim($path, '/');
+        $base = $publicDir ?? (getcwd() . '/public');
+        $publicPath = $base . '/' . ltrim($path, '/');
 
         if ($versioned && file_exists($publicPath)) {
             $hash = substr(md5_file($publicPath) ?: '', 0, 8);

@@ -105,6 +105,45 @@ class RunnerTest extends TestCase
         $runner->run($invalidBinary, $config);
     }
 
+    public function testRunResultCapturesStdoutAndStderr(): void
+    {
+        $binary = $this->createOutputBinary(3);
+        $config = new PHPWindConfig(inputCss: 'resources/css/app.css', outputCss: 'public/css/app.css');
+
+        $runner = new Runner();
+        $result = $runner->runResult($binary, $config);
+
+        $this->assertSame(3, $result->exitCode);
+        $this->assertStringContainsString('hello out', $result->stdout);
+        $this->assertStringContainsString('hello err', $result->stderr);
+    }
+
+    public function testRunDelegatesToRunResultExitCode(): void
+    {
+        $binary = $this->createOutputBinary(7);
+        $config = new PHPWindConfig(inputCss: 'resources/css/app.css', outputCss: 'public/css/app.css');
+
+        $runner = new Runner();
+        $exitCode = $runner->run($binary, $config);
+
+        $this->assertSame(7, $exitCode);
+    }
+
+    private function createOutputBinary(int $exitCode): string
+    {
+        $script = $this->tempDir . DIRECTORY_SEPARATOR . 'fake-output.php';
+        $code = <<<PHP
+<?php
+fwrite(STDOUT, "hello out\\n");
+fwrite(STDERR, "hello err\\n");
+exit({$exitCode});
+PHP;
+
+        file_put_contents($script, $code);
+
+        return PHP_BINARY . ' ' . $script;
+    }
+
     private function createFakeBinary(int $exitCode, bool $jsonCapture = false): string
     {
         $captureFile = $this->tempDir . DIRECTORY_SEPARATOR . ($jsonCapture ? 'captured.json' : 'captured.args');

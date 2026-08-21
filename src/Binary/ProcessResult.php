@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
-namespace PHPWind\Compiler;
+namespace PHPWind\Binary;
 
-class CompilationResult
+class ProcessResult
 {
     public function __construct(
         public readonly int $exitCode,
-        public readonly string $outputPath,
-        public readonly int $durationMs,
         public readonly string $stdout = '',
         public readonly string $stderr = ''
     ) {}

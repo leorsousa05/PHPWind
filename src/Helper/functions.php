@@ -6,9 +6,9 @@ use PHPWind\Helper\AssetHelper;
 use PHPWind\Manifest\AssetManifest;
 
 if (!function_exists('phpwind_css')) {
-    function phpwind_css(string $path = 'css/app.css', bool $versioned = true): string
+    function phpwind_css(string $path = 'css/app.css', bool $versioned = true, ?string $publicDir = null): string
     {
-        return AssetHelper::css($path, $versioned);
+        return AssetHelper::css($path, $versioned, $publicDir);
     }
 }
 

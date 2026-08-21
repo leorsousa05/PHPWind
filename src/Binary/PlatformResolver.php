@@ -11,24 +11,13 @@ class PlatformResolver
         $os = strtolower(PHP_OS_FAMILY);
         $arch = strtolower(php_uname('m'));
         $isArm = str_contains($arch, 'arm') || str_contains($arch, 'aarch64');
-        $isV3 = str_starts_with(ltrim($version, 'v'), '3.');
 
         if ($os === 'windows') {
-            if ($isV3) {
-                return $isArm ? 'tailwindcss-windows-arm64.exe' : 'tailwindcss-windows-x64.exe';
-            }
             return $isArm ? 'tailwindcss-windows-arm64.exe' : 'tailwindcss-windows-x64.exe';
         }
 
         if ($os === 'darwin') {
-            if ($isV3) {
-                return $isArm ? 'tailwindcss-macos-arm64' : 'tailwindcss-macos-x64';
-            }
             return $isArm ? 'tailwindcss-macos-arm64' : 'tailwindcss-macos-x64';
-        }
-
-        if ($isV3) {
-            return $isArm ? 'tailwindcss-linux-arm64' : 'tailwindcss-linux-x64';
         }
 
         return $isArm ? 'tailwindcss-linux-arm64' : 'tailwindcss-linux-x64';

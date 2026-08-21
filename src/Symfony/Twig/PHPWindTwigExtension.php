@@ -15,8 +15,8 @@ class PHPWindTwigExtension extends AbstractExtension
         ];
     }
 
-    public function renderCss(string $path = 'css/app.css', bool $versioned = true): string
+    public function renderCss(string $path = 'css/app.css', bool $versioned = true, ?string $publicDir = null): string
     {
-        return AssetHelper::css($path, $versioned);
+        return AssetHelper::css($path, $versioned, $publicDir);
     }
 }

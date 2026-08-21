@@ -1,9 +1,12 @@
 <?php
 
+use PHPWind\Config\Env;
+
 return [
-    'input_css' => resource_path('css/app.css'),
-    'output_css' => public_path('css/app.css'),
-    'binary_dir' => base_path('vendor/bin/tailwind-cli'),
-    'version' => 'v4.0.0',
-    'minify' => env('PHPWIND_MINIFY', false),
+    'input_css' => Env::get('PHPWIND_INPUT_CSS', 'resources/css/app.css'),
+    'output_css' => Env::get('PHPWIND_OUTPUT_CSS', 'public/css/app.css'),
+    'binary_dir' => Env::get('PHPWIND_BINARY_DIR', 'vendor/bin/tailwind-cli'),
+    'version' => Env::get('PHPWIND_VERSION', 'v4.0.0'),
+    'minify' => (bool) Env::get('PHPWIND_MINIFY', false),
+    'watch' => (bool) Env::get('PHPWIND_WATCH', false),
 ];

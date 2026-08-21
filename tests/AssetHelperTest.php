@@ -69,6 +69,18 @@ class AssetHelperTest extends TestCase
         $this->assertStringContainsString('&#039;', $tag);
     }
 
+    public function testCssUsesCustomPublicDir(): void
+    {
+        $customDir = $this->tempDir . DIRECTORY_SEPARATOR . 'dist';
+        mkdir($customDir . DIRECTORY_SEPARATOR . 'css', 0755, true);
+        file_put_contents($customDir . DIRECTORY_SEPARATOR . 'css/app.css', 'body{}');
+        $expectedHash = substr(md5_file($customDir . DIRECTORY_SEPARATOR . 'css/app.css') ?: '', 0, 8);
+
+        $tag = AssetHelper::css('css/app.css', true, $customDir);
+
+        $this->assertStringContainsString('/css/app.css?v=' . $expectedHash, $tag);
+    }
+
     public function testCssFromManifestReturnsVersionedUrl(): void
     {
         $manifest = new AssetManifest([
