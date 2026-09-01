@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Laravel\Commands;
 
 use Illuminate\Console\Command;
+use PHPWind\Binary\PlatformResolver;
 use PHPWind\Command\InitHandler;
 use PHPWind\Config\PHPWindConfig;
 
@@ -17,7 +20,7 @@ class InitCommand extends Command
 
         $input = $this->option('input') ?: $this->ask('Input CSS path', config('phpwind.input_css', resource_path('css/app.css')));
         $output = $this->option('output') ?: $this->ask('Output CSS path', config('phpwind.output_css', public_path('css/app.css')));
-        $version = $this->option('version') ?: $this->ask('Tailwind CSS version', config('phpwind.version', 'v4.0.0'));
+        $version = $this->option('version') ?: $this->ask('Tailwind CSS version', config('phpwind.version', PlatformResolver::DEFAULT_VERSION));
 
         $config = new PHPWindConfig(
             inputCss: $input,

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Symfony\Command;
 
+use PHPWind\Binary\PlatformResolver;
 use PHPWind\Compiler\TailwindCompiler;
 use PHPWind\Config\PHPWindConfig;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -20,7 +23,7 @@ class BuildCommand extends Command
             ->addOption('input', 'i', InputOption::VALUE_OPTIONAL, 'Input CSS path', 'assets/styles/app.css')
             ->addOption('output', 'o', InputOption::VALUE_OPTIONAL, 'Output CSS path', 'public/css/app.css')
             ->addOption('minify', 'm', InputOption::VALUE_NONE, 'Minify CSS output')
-            ->addOption('tailwind-version', null, InputOption::VALUE_OPTIONAL, 'Tailwind version', 'v4.0.0');
+            ->addOption('tailwind-version', null, InputOption::VALUE_OPTIONAL, 'Tailwind version', PlatformResolver::DEFAULT_VERSION);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

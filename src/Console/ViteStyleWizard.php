@@ -1,9 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Console;
+
+use PHPWind\Binary\PlatformResolver;
 
 class ViteStyleWizard
 {
+    private const PACKAGE_VERSION = '1.7.0';
+
     public static function run(array $args): array
     {
         $noInteraction = in_array('--no-interaction', $args) || in_array('-n', $args);
@@ -12,13 +18,13 @@ class ViteStyleWizard
             return [
                 'input' => 'resources/css/app.css',
                 'output' => 'public/css/app.css',
-                'version' => 'v4.0.0',
+                'version' => PlatformResolver::DEFAULT_VERSION,
                 'preset' => 'vanilla',
                 'create_sample' => false
             ];
         }
 
-        self::write("\n  \e[1;36m🌬️  PHPWind Interactive Setup Wizard\e[0m \e[90mv1.3.0\e[0m\n\n");
+        self::write("\n  \e[1;36m🌬️  PHPWind Interactive Setup Wizard\e[0m \e[90mv" . self::PACKAGE_VERSION . "\e[0m\n\n");
 
         self::write("  \e[36m?\e[0m \e[1mSelect framework preset:\e[0m\n");
         self::write("    \e[36m1)\e[0m Vanilla PHP / Custom Framework \e[90m(Default)\e[0m\n");
@@ -37,7 +43,7 @@ class ViteStyleWizard
         self::write("    \e[90m2)\e[0m v3.4.17 \e[90m(Tailwind v3.x)\e[0m\n");
         $versionChoice = self::prompt("  \e[90mSelect version [1-2] (1):\e[0m ", '1');
 
-        $version = $versionChoice === '2' ? 'v3.4.17' : 'v4.0.0';
+        $version = $versionChoice === '2' ? 'v3.4.17' : PlatformResolver::DEFAULT_VERSION;
 
         $defaultInput = 'resources/css/app.css';
         $defaultOutput = 'public/css/app.css';

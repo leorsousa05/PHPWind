@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Laravel;
 
 use Illuminate\Support\Facades\Blade;

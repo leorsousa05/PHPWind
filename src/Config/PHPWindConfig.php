@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PHPWind\Config;
 
+use PHPWind\Binary\PlatformResolver;
 use PHPWind\Exception\InvalidConfigurationException;
 
 class PHPWindConfig
@@ -12,7 +13,7 @@ class PHPWindConfig
         public string $inputCss = 'resources/css/app.css',
         public string $outputCss = 'public/css/app.css',
         public string $binaryDir = 'vendor/bin/tailwind-cli',
-        public string $version = 'v4.0.0',
+        public string $version = PlatformResolver::DEFAULT_VERSION,
         public bool $minify = false,
         public bool $watch = false
     ) {}
@@ -23,7 +24,7 @@ class PHPWindConfig
             inputCss: $config['input_css'] ?? 'resources/css/app.css',
             outputCss: $config['output_css'] ?? 'public/css/app.css',
             binaryDir: $config['binary_dir'] ?? 'vendor/bin/tailwind-cli',
-            version: $config['version'] ?? 'v4.0.0',
+            version: $config['version'] ?? PlatformResolver::DEFAULT_VERSION,
             minify: (bool) ($config['minify'] ?? false),
             watch: (bool) ($config['watch'] ?? false)
         );

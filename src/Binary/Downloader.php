@@ -43,9 +43,10 @@ class Downloader
             mkdir($directory, 0755, true);
         }
 
-        $fp = fopen($destinationPath, 'w+');
+        $tmpPath = $destinationPath . '.part.' . uniqid('', true);
+        $fp = fopen($tmpPath, 'w+');
         if ($fp === false) {
-            throw new BinaryDownloadException("Could not open file for writing at {$destinationPath}");
+            throw new BinaryDownloadException("Could not open file for writing at {$tmpPath}");
         }
 
         try {
@@ -55,9 +56,7 @@ class Downloader
         }
 
         if (!$result['success'] || $result['httpCode'] !== 200) {
-            if (file_exists($destinationPath)) {
-                unlink($destinationPath);
-            }
+            @unlink($tmpPath);
 
             throw new BinaryDownloadException(
                 "Failed to download Tailwind CLI binary from {$url} (HTTP {$result['httpCode']})" . ($result['error'] !== '' ? ": {$result['error']}" : '')
@@ -65,7 +64,13 @@ class Downloader
         }
 
         if (PHP_OS_FAMILY !== 'Windows') {
-            chmod($destinationPath, 0755);
+            chmod($tmpPath, 0755);
+        }
+
+        if (!rename($tmpPath, $destinationPath)) {
+            @unlink($tmpPath);
+
+            throw new BinaryDownloadException("Could not move downloaded binary into place at {$destinationPath}");
         }
     }
 

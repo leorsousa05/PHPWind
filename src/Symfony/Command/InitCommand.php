@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Symfony\Command;
 
 use PHPWind\Command\InitHandler;

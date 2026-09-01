@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PHPWind\Laravel\Commands;
 
 use Illuminate\Console\Command;
+use PHPWind\Binary\PlatformResolver;
 use PHPWind\Compiler\TailwindCompiler;
 use PHPWind\Config\PHPWindConfig;
 
@@ -19,7 +22,7 @@ class WatchCommand extends Command
             'input_css' => config('phpwind.input_css', resource_path('css/app.css')),
             'output_css' => config('phpwind.output_css', public_path('css/app.css')),
             'binary_dir' => config('phpwind.binary_dir', base_path('vendor/bin/tailwind-cli')),
-            'version' => config('phpwind.version', 'v4.0.0'),
+            'version' => config('phpwind.version', PlatformResolver::DEFAULT_VERSION),
             'minify' => false,
             'watch' => true
         ]);

@@ -1,6 +1,6 @@
 {
     "name": "phpwind/phpwind",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "description": "Tailwind CSS v3 & v4 standalone CLI wrapper for PHP projects without Node.js dependency",
     "type": "library",
     "license": "MIT",

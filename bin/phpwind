@@ -21,6 +21,7 @@ if (!$loaded) {
     exit(1);
 }
 
+use PHPWind\Binary\PlatformResolver;
 use PHPWind\Command\CleanHandler;
 use PHPWind\Command\InitHandler;
 use PHPWind\Compiler\TailwindCompiler;
@@ -35,7 +36,7 @@ $watch = $action === 'watch' || in_array('--watch', $args) || in_array('-w', $ar
 
 $input = 'resources/css/app.css';
 $output = 'public/css/app.css';
-$version = 'v4.0.0';
+$version = PlatformResolver::DEFAULT_VERSION;
 
 foreach ($args as $index => $arg) {
     if (($arg === '-i' || $arg === '--input') && isset($args[$index + 1])) {

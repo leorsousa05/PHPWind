@@ -6,7 +6,9 @@ namespace PHPWind\Binary;
 
 class PlatformResolver
 {
-    public static function getBinaryName(string $version = 'v4.0.0'): string
+    public const DEFAULT_VERSION = 'v4.0.0';
+
+    public static function getBinaryName(): string
     {
         $os = strtolower(PHP_OS_FAMILY);
         $arch = strtolower(php_uname('m'));
@@ -23,10 +25,10 @@ class PlatformResolver
         return $isArm ? 'tailwindcss-linux-arm64' : 'tailwindcss-linux-x64';
     }
 
-    public static function getDownloadUrl(string $version = 'v4.0.0'): string
+    public static function getDownloadUrl(string $version = self::DEFAULT_VERSION): string
     {
         $cleanVersion = ltrim($version, 'v');
-        $binary = self::getBinaryName($version);
+        $binary = self::getBinaryName();
         $repo = str_starts_with($cleanVersion, '3.') ? 'tailwindcss/tailwindcss-cli' : 'tailwindcss/tailwindcss';
 
         return "https://github.com/{$repo}/releases/download/v{$cleanVersion}/{$binary}";
