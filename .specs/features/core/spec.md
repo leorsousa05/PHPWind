@@ -1,4 +1,6 @@
-> Merged living specification for the **Core** domain of PHPWind.
+# Core — PHPWind (Living Spec)
+
+> Migrated from legacy `specs/living/core/spec.md` (git HEAD) + changes 001/002 (both completed).
 
 ## Overview
 
