@@ -1,7 +1,6 @@
 # ADR-001: Project identity & package
 
-## Status
-Accepted (migrated from composer.json)
+**Status:** Accepted (migrated from composer.json)
 
 ## Context
 PHPWind is a composer library. Contract answers for routing.

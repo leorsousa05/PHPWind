@@ -1,7 +1,6 @@
 # ADR-002: Conventions for routed work
 
-## Status
-Accepted (human-confirmed, "standard suite as shipped")
+**Status:** Accepted (human-confirmed, "standard suite as shipped")
 
 ## Decision
 - Match existing code style and structure.

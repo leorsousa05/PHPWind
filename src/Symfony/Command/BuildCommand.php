@@ -7,6 +7,8 @@ namespace PHPWind\Symfony\Command;
 use PHPWind\Binary\PlatformResolver;
 use PHPWind\Compiler\TailwindCompiler;
 use PHPWind\Config\PHPWindConfig;
+use PHPWind\Config\Env;
+use PHPWind\Command\BuildOutputFormatter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,22 +31,29 @@ class BuildCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $io->title('PHPWind Symfony CSS Build');
+        $io->title('PHPWind CSS Build');
 
         $config = new PHPWindConfig(
             inputCss: (string) $input->getOption('input'),
             outputCss: (string) $input->getOption('output'),
             version: (string) $input->getOption('tailwind-version'),
-            minify: (bool) $input->getOption('minify')
+            minify: (bool) $input->getOption('minify'),
+            downloadTimeout: (int) Env::get('PHPWIND_DOWNLOAD_TIMEOUT', 120),
+            verifySsl: filter_var(Env::get('PHPWIND_VERIFY_SSL', true), FILTER_VALIDATE_BOOL)
         );
 
         $compiler = new TailwindCompiler();
-        $exitCode = $compiler->compile($config);
+        try { $result = $compiler->compileResult($config); }
+        catch (\Throwable $exception) {
+            $io->error(BuildOutputFormatter::exception($exception));
+            return 1;
+        }
+        $exitCode = $result->exitCode;
 
         if ($exitCode === 0) {
-            $io->success('Tailwind CSS build completed successfully.');
+            $io->success(BuildOutputFormatter::success());
         } else {
-            $io->error('Tailwind CSS build failed.');
+            $io->error(BuildOutputFormatter::failure($result));
         }
 
         return $exitCode;

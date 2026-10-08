@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use PHPWind\Binary\PlatformResolver;
 use PHPWind\Compiler\TailwindCompiler;
 use PHPWind\Config\PHPWindConfig;
+use PHPWind\Command\BuildOutputFormatter;
 
 class BuildCommand extends Command
 {
@@ -16,23 +17,28 @@ class BuildCommand extends Command
 
     public function handle(TailwindCompiler $compiler): int
     {
-        $this->info('Building Tailwind CSS v4...');
-
         $config = PHPWindConfig::fromArray([
             'input_css' => config('phpwind.input_css', resource_path('css/app.css')),
             'output_css' => config('phpwind.output_css', public_path('css/app.css')),
             'binary_dir' => config('phpwind.binary_dir', base_path('vendor/bin/tailwind-cli')),
             'version' => config('phpwind.version', PlatformResolver::DEFAULT_VERSION),
             'minify' => $this->option('minify') || config('phpwind.minify', false),
-            'watch' => false
+            'watch' => false,
+            'download_timeout' => config('phpwind.download_timeout', 120),
+            'verify_ssl' => config('phpwind.verify_ssl', true)
         ]);
 
-        $exitCode = $compiler->compile($config);
+        try { $result = $compiler->compileResult($config); }
+        catch (\Throwable $exception) {
+            $this->error(BuildOutputFormatter::exception($exception));
+            return 1;
+        }
+        $exitCode = $result->exitCode;
 
         if ($exitCode === 0) {
-            $this->info('Tailwind CSS v4 build completed successfully.');
+            $this->info(BuildOutputFormatter::success());
         } else {
-            $this->error('Tailwind CSS v4 build failed.');
+            $this->error(BuildOutputFormatter::failure($result));
         }
 
         return $exitCode;

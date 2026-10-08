@@ -12,4 +12,6 @@ return [
     'version' => Env::get('PHPWIND_VERSION', PlatformResolver::DEFAULT_VERSION),
     'minify' => (bool) Env::get('PHPWIND_MINIFY', false),
     'watch' => (bool) Env::get('PHPWIND_WATCH', false),
+    'download_timeout' => Env::get('PHPWIND_DOWNLOAD_TIMEOUT', 120),
+    'verify_ssl' => filter_var(Env::get('PHPWIND_VERIFY_SSL', true), FILTER_VALIDATE_BOOL),
 ];

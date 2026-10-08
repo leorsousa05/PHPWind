@@ -44,6 +44,33 @@ Detecta automáticamente el Sistema Operativo y la arquitectura de la máquina, 
 composer require phpwind/phpwind
 ```
 
+### PHP sin framework y CI
+
+```bash
+composer require phpwind/phpwind
+php vendor/bin/phpwind init
+php vendor/bin/phpwind doctor
+php vendor/bin/phpwind build --input resources/css/app.css --output public/css/app.css --minify
+```
+
+Ejemplo copiable de GitHub Actions; si falla la compilación CSS, también falla el job:
+
+```yaml
+name: Build CSS
+on: [push, pull_request]
+jobs:
+  css:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.1', tools: composer }
+      - run: composer install --no-interaction --prefer-dist
+      - run: php vendor/bin/phpwind build --input resources/css/app.css --output public/css/app.css
+```
+
+En Laravel, instale el paquete y ejecute `php artisan phpwind:build`; añada ese comando al CI después de `composer install`.
+
 ---
 
 ## 💻 Integración con Symfony

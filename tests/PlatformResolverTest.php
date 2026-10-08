@@ -16,6 +16,34 @@ class PlatformResolverTest extends TestCase
         $this->assertStringContainsString('tailwindcss', $binary);
     }
 
+    public function testSupportedPlatformMappingsAreExplicit(): void
+    {
+        self::assertSame('tailwindcss-linux-x64', PlatformResolver::getBinaryName('Linux', 'x86_64'));
+        self::assertSame('tailwindcss-linux-arm64', PlatformResolver::getBinaryName('Linux', 'aarch64'));
+        self::assertSame('tailwindcss-macos-x64', PlatformResolver::getBinaryName('Darwin', 'x86_64'));
+        self::assertSame('tailwindcss-macos-arm64', PlatformResolver::getBinaryName('Darwin', 'arm64'));
+        self::assertSame('tailwindcss-windows-x64.exe', PlatformResolver::getBinaryName('Windows', 'AMD64'));
+        self::assertSame('tailwindcss-windows-arm64.exe', PlatformResolver::getBinaryName('Windows', 'aarch64'));
+    }
+
+    public function testUnsupportedPlatformIsRejected(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        PlatformResolver::getBinaryName('FreeBSD', 'x86_64');
+    }
+
+    public function testUnsupportedArchitectureIsRejected(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        PlatformResolver::getBinaryName('Linux', 'mips64');
+    }
+
+    public function testSemanticVersionRejectsNumericPrereleaseLeadingZeros(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        PlatformResolver::getDownloadUrl('v4.0.0-01');
+    }
+
     public function testGetDownloadUrlFormatsV4Correctly(): void
     {
         $url = PlatformResolver::getDownloadUrl('v4.0.0');

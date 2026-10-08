@@ -5,6 +5,8 @@ namespace PHPWind\Tests;
 use PHPUnit\Framework\TestCase;
 use PHPWind\Symfony\PHPWindBundle;
 use PHPWind\Symfony\Twig\PHPWindTwigExtension;
+use PHPWind\Symfony\Command\BuildCommand;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class SymfonyTest extends TestCase
 {
@@ -29,5 +31,13 @@ class SymfonyTest extends TestCase
         $rendered = $extension->renderCss('css/app.css', false);
 
         $this->assertStringContainsString('<link rel="stylesheet" href="/css/app.css">', $rendered);
+    }
+
+    public function testBuildCommandUsesSharedFailureWordingAndExitCode(): void
+    {
+        $tester = new CommandTester(new BuildCommand());
+        $code = $tester->execute(['--input' => '/definitely/missing/phpwind-input.css']);
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('Tailwind CSS build failed: Input CSS file does not exist', $tester->getDisplay());
     }
 }

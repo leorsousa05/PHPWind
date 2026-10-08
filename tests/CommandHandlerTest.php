@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use PHPWind\Binary\PlatformResolver;
 use PHPWind\Command\CleanHandler;
 use PHPWind\Command\InitHandler;
+use PHPWind\Command\DoctorHandler;
 use PHPWind\Config\PHPWindConfig;
 use PHPWind\Tests\Concerns\RemovesTempDirectories;
 
@@ -60,5 +61,54 @@ class CommandHandlerTest extends TestCase
 
         $this->assertFileDoesNotExist($binaryFile);
         $this->assertFileDoesNotExist($outputCss);
+    }
+
+    public function testDoctorReportsMissingCacheWithoutSideEffectsAndInputFailure(): void
+    {
+        $cache = $this->tempDir . '/not-created/cache';
+        $result = (new DoctorHandler())->diagnose(new PHPWindConfig(inputCss: $this->tempDir . '/missing.css', outputCss: $this->tempDir . '/out.css', binaryDir: $cache));
+        $this->assertSame(1, $result['exitCode']);
+        $this->assertStringContainsString('Input CSS readable', $result['output']);
+        $this->assertStringContainsString('Summary:', $result['output']);
+        $this->assertStringContainsString('offline', $result['output']);
+        $this->assertStringContainsString('Binary cache entry: not installed', $result['output']);
+        $this->assertDirectoryDoesNotExist(dirname($cache));
+        $this->assertFileDoesNotExist($this->tempDir . '/out.css');
+    }
+
+    public function testDoctorSuccessReportsValidCacheAndDoesNotModifyFilesystem(): void
+    {
+        $input = $this->tempDir . '/input.css';
+        $binaryDir = $this->tempDir . '/bin';
+        $outputDir = $this->tempDir . '/new';
+        mkdir($binaryDir);
+        mkdir($outputDir);
+        file_put_contents($input, '/* input */');
+        $binaryPath = $binaryDir . '/' . PlatformResolver::getVersionedBinaryName(PlatformResolver::DEFAULT_VERSION);
+        file_put_contents($binaryPath, 'binary');
+        if (PHP_OS_FAMILY !== 'Windows') chmod($binaryPath, 0755);
+        $before = scandir($this->tempDir);
+
+        $result = (new DoctorHandler())->diagnose(new PHPWindConfig(inputCss: $input, outputCss: $outputDir . '/out.css', binaryDir: $binaryDir));
+
+        $this->assertSame(0, $result['exitCode']);
+        $this->assertStringContainsString('Binary cache entry: present/valid', $result['output']);
+        $this->assertStringContainsString('Tailwind version:', $result['output']);
+        $this->assertSame($before, scandir($this->tempDir));
+        $this->assertFileDoesNotExist($this->tempDir . '/new/out.css');
+    }
+
+    public function testDoctorLabelsInvalidCacheWithoutTreatingItAsRequiredFailure(): void
+    {
+        $input = $this->tempDir . '/input.css';
+        $binaryDir = $this->tempDir . '/bin';
+        mkdir($binaryDir);
+        file_put_contents($input, '/* input */');
+        file_put_contents($binaryDir . '/' . PlatformResolver::getVersionedBinaryName(PlatformResolver::DEFAULT_VERSION), '');
+
+        $result = (new DoctorHandler())->diagnose(new PHPWindConfig(inputCss: $input, outputCss: $this->tempDir . '/out.css', binaryDir: $binaryDir));
+
+        $this->assertSame(0, $result['exitCode']);
+        $this->assertStringContainsString('Binary cache entry: present/invalid', $result['output']);
     }
 }

@@ -17,6 +17,35 @@ class PHPWindConfigTest extends TestCase
         $this->assertEquals('public/css/app.css', $config->outputCss);
         $this->assertFalse($config->minify);
         $this->assertFalse($config->watch);
+        $this->assertSame(120, $config->downloadTimeout);
+        $this->assertTrue($config->verifySsl);
+    }
+
+    public function testDownloadSettingsRoundTripAndRejectInvalidTimeout(): void
+    {
+        $config = PHPWindConfig::fromArray(['download_timeout' => '45', 'verify_ssl' => 'false']);
+        $this->assertSame(45, $config->downloadTimeout);
+        $this->assertFalse($config->verifySsl);
+        $this->assertSame($config->toArray(), PHPWindConfig::fromArray($config->toArray())->toArray());
+        $this->expectException(InvalidConfigurationException::class);
+        PHPWindConfig::fromArray(['download_timeout' => '0']);
+    }
+
+    public function testShippedConfigReadsDownloadEnvironmentSettings(): void
+    {
+        $oldTimeout = getenv('PHPWIND_DOWNLOAD_TIMEOUT');
+        $oldSsl = getenv('PHPWIND_VERIFY_SSL');
+        putenv('PHPWIND_DOWNLOAD_TIMEOUT=37');
+        putenv('PHPWIND_VERIFY_SSL=false');
+        try {
+            $values = require dirname(__DIR__) . '/config/phpwind.php';
+            $config = PHPWindConfig::fromArray($values);
+            $this->assertSame(37, $config->downloadTimeout);
+            $this->assertFalse($config->verifySsl);
+        } finally {
+            $oldTimeout === false ? putenv('PHPWIND_DOWNLOAD_TIMEOUT') : putenv('PHPWIND_DOWNLOAD_TIMEOUT=' . $oldTimeout);
+            $oldSsl === false ? putenv('PHPWIND_VERIFY_SSL') : putenv('PHPWIND_VERIFY_SSL=' . $oldSsl);
+        }
     }
 
     public function testFromArray(): void
@@ -82,5 +111,11 @@ class PHPWindConfigTest extends TestCase
 
         $config = new PHPWindConfig(version: 'not-a-version');
         $config->validate();
+    }
+
+    public function testValidateRejectsVersionWithTrailingGarbage(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        (new PHPWindConfig(version: 'v4.0.0oops'))->validate();
     }
 }

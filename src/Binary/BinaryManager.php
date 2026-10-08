@@ -18,19 +18,40 @@ class BinaryManager
      */
     public function resolveBinaryPath(string $version): string
     {
+        PlatformResolver::getDownloadUrl($version); // Validate version and platform before touching the cache.
         if (!is_dir($this->binaryDir)) {
-            mkdir($this->binaryDir, 0755, true);
+            if (!@mkdir($this->binaryDir, 0755, true) && !is_dir($this->binaryDir)) {
+                throw new BinaryDownloadException("Could not create binary cache directory at {$this->binaryDir}");
+            }
         }
 
         $binaryPath = rtrim($this->binaryDir, '/\\') . DIRECTORY_SEPARATOR . PlatformResolver::getVersionedBinaryName($version);
-
-        if (file_exists($binaryPath)) {
-            return realpath($binaryPath) ?: $binaryPath;
+        $lock = fopen($binaryPath . '.lock', 'c');
+        if ($lock === false || !flock($lock, LOCK_EX)) {
+            throw new BinaryDownloadException("Could not lock binary cache entry at {$binaryPath}");
         }
+        try {
+            if (is_file($binaryPath) && $this->isValidBinary($binaryPath)) {
+                return realpath($binaryPath) ?: $binaryPath;
+            }
+            if (file_exists($binaryPath) && !@unlink($binaryPath)) {
+                throw new BinaryDownloadException("Invalid cached Tailwind CLI binary could not be removed at {$binaryPath}");
+            }
+            $this->getDownloader()->download(PlatformResolver::getDownloadUrl($version), $binaryPath);
+            if (!$this->isValidBinary($binaryPath)) {
+                @unlink($binaryPath);
+                throw new BinaryDownloadException("Downloaded Tailwind CLI binary is empty or not executable at {$binaryPath}");
+            }
+            return realpath($binaryPath) ?: $binaryPath;
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
+    }
 
-        $this->getDownloader()->download(PlatformResolver::getDownloadUrl($version), $binaryPath);
-
-        return realpath($binaryPath) ?: $binaryPath;
+    private function isValidBinary(string $path): bool
+    {
+        return filesize($path) > 0 && (PHP_OS_FAMILY === 'Windows' || is_executable($path));
     }
 
     public function clearCachedBinary(?string $version = null): bool

@@ -1,4 +1,13 @@
-# Core — PHPWind (Living Spec)
+# Feature: Core — PHPWind (Living Spec)
+
+## Goal
+
+Provide the framework-agnostic PHP core for Tailwind CLI configuration, binary management, compilation, and asset handling.
+
+## Acceptance
+
+- Core contracts and backward compatibility are covered by the full PHPUnit suite.
+- The wrapper delegates CSS compilation to the official standalone Tailwind CLI and adds no Node.js runtime dependency.
 
 > Migrated from legacy `specs/living/core/spec.md` (git HEAD) + changes 001/002 (both completed).
 
@@ -13,7 +22,7 @@ PHPWind is a zero-Node PHP integration for Tailwind CSS v3/v4. The core domain m
 - `toArray()` round-trips a config back to snake_case keys.
 - `validate()` enforces:
   - Non-empty `inputCss`, `outputCss`, `binaryDir`.
-  - `version` matches a semantic version prefix (`v4.0.0`, `3.4.17`, etc.).
+  - `version` matches a complete semantic version (`v4.0.0`, `3.4.17`, including valid prerelease/build metadata).
 - `PHPWind\Config\ConfigLoader::load(string $file)` reads a PHP config file and returns a validated `PHPWindConfig`; `fromArray()` builds and validates one. Throws `InvalidConfigurationException` for missing/unreadable files, non-array returns, or invalid values.
 - `PHPWind\Config\Env::get(string $key, mixed $default)` reads an environment value from getenv → `$_ENV` → `$_SERVER` → default. It is framework-agnostic (no Laravel `env()`/`resource_path()`).
 - The shipped `config/phpwind.php` is framework-agnostic (relative paths + `Env`). The Laravel `ServiceProvider` resolves shipped relative path defaults to Laravel absolute paths, leaving user-customized values untouched.
@@ -27,6 +36,7 @@ PHPWind is a zero-Node PHP integration for Tailwind CSS v3/v4. The core domain m
   - Windows: `tailwind-v4.0.0.exe`
 - Changing `PHPWindConfig::$version` triggers a new download automatically.
 - `BinaryManager::clearCachedBinary()` removes generic, specific, or all versioned binaries.
+- Reliability hardening for cache integrity, concurrent downloads, supported platforms, and configuration/process errors is tracked in `features/wrapper-reliability/spec.md`.
 
 ## Compilation
 

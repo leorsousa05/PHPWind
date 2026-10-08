@@ -24,8 +24,11 @@ if (!$loaded) {
 use PHPWind\Binary\PlatformResolver;
 use PHPWind\Command\CleanHandler;
 use PHPWind\Command\InitHandler;
+use PHPWind\Command\DoctorHandler;
+use PHPWind\Command\BuildOutputFormatter;
 use PHPWind\Compiler\TailwindCompiler;
 use PHPWind\Config\PHPWindConfig;
+use PHPWind\Config\Env;
 use PHPWind\Console\ViteStyleWizard;
 
 $args = array_slice($argv, 1);
@@ -66,13 +69,24 @@ if ($action === 'init') {
     exit(0);
 }
 
-$config = new PHPWindConfig(
-    inputCss: $input,
-    outputCss: $output,
-    version: $version,
-    minify: $minify,
-    watch: $watch
-);
+if ($action === 'doctor') {
+    $doctorConfig = PHPWindConfig::fromArray(is_file('config/phpwind.php') ? require 'config/phpwind.php' : []);
+    $result = (new DoctorHandler())->diagnose($doctorConfig);
+    fwrite(STDOUT, $result['output']);
+    exit($result['exitCode']);
+}
+
+$configValues = is_file('config/phpwind.php') ? require 'config/phpwind.php' : [];
+$config = PHPWindConfig::fromArray(array_merge([
+    'download_timeout' => Env::get('PHPWIND_DOWNLOAD_TIMEOUT', 120),
+    'verify_ssl' => Env::get('PHPWIND_VERIFY_SSL', true),
+], $configValues, [
+    'input_css' => $input,
+    'output_css' => $output,
+    'version' => $version,
+    'minify' => $minify,
+    'watch' => $watch,
+]));
 
 if ($action === 'clean' || $action === 'purge') {
     $cleanOutput = in_array('--all', $args);
@@ -82,7 +96,17 @@ if ($action === 'clean' || $action === 'purge') {
     exit(0);
 }
 
-$compiler = new TailwindCompiler();
-$exitCode = $compiler->compile($config);
+try {
+    $result = (new TailwindCompiler())->compileResult($config);
+    if ($result->exitCode === 0) {
+        fwrite(STDOUT, BuildOutputFormatter::success() . "\n");
+    } else {
+        fwrite(STDERR, BuildOutputFormatter::failure($result) . "\n");
+    }
+    $exitCode = $result->exitCode;
+} catch (Throwable $exception) {
+    fwrite(STDERR, BuildOutputFormatter::exception($exception) . "\n");
+    $exitCode = 1;
+}
 
 exit($exitCode);

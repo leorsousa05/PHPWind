@@ -1,6 +1,6 @@
 # ADR-003: Verifier & acceptance gate
 
-Status: Accepted (human-confirmed)
+**Status:** Accepted (human-confirmed)
 
 ## Decision
 - Verifier: `composer install` once, then `vendor/bin/phpunit tests`.

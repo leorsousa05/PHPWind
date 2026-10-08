@@ -44,6 +44,35 @@ It automatically detects your host Operating System and CPU architecture, downlo
 composer require phpwind/phpwind
 ```
 
+### Vanilla PHP and CI
+
+```bash
+composer require phpwind/phpwind
+php vendor/bin/phpwind init
+php vendor/bin/phpwind doctor
+php vendor/bin/phpwind build --input resources/css/app.css --output public/css/app.css --minify
+```
+
+Commit the generated CSS or build it in CI. This GitHub Actions example preserves
+the compiler's exit status, so a failed CSS build fails the job:
+
+```yaml
+name: Build CSS
+on: [push, pull_request]
+jobs:
+  css:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.1', tools: composer }
+      - run: composer install --no-interaction --prefer-dist
+      - run: php vendor/bin/phpwind build --input resources/css/app.css --output public/css/app.css
+```
+
+For Laravel, install the package and use `php artisan phpwind:build`; add that
+same command as a CI step after `composer install`.
+
 ---
 
 ## 💻 Symfony Integration
